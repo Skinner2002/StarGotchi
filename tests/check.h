@@ -4,6 +4,7 @@
 #include <cmath>
 #include <cstdio>
 #include <functional>
+#include <string>
 #include <vector>
 
 namespace sgtest {

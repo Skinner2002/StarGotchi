@@ -6,6 +6,10 @@
 #include "pages.h"
 #include "theme.h"
 
+#ifndef SG_VERSION
+#define SG_VERSION "dev"
+#endif
+
 namespace sg {
 namespace ui {
 
@@ -24,6 +28,8 @@ void statsBuild(lv_obj_t *tile) {
     rows[i] = theme::label(tile, "", theme::big(), i % 2 ? theme::kMuted : 0xD3D1C7);
     lv_obj_align(rows[i], LV_ALIGN_TOP_MID, 0, 120 + i * 40);
   }
+  lv_obj_t *ver = theme::label(tile, "StarGotchi v" SG_VERSION, theme::small(), 0x5F5E5A);
+  lv_obj_align(ver, LV_ALIGN_TOP_MID, 0, 380);
 }
 
 void statsRefresh(const Pet &p, uint32_t now, int battery) {

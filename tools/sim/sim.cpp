@@ -8,6 +8,7 @@
 
 #include "game/pet.h"
 #include "ui/ui.h"
+#include "ui/minigame.h"
 
 static lv_color_t fb[466 * 466];
 static lv_color_t buf[466 * 466 / 4];
@@ -80,5 +81,10 @@ int main() {
   shot("setup");
   sg::ui::debugShowPage(1);
 
+  sg::ui::MinigameIO io{[]() { return 0.3f; }, [](uint16_t, uint16_t) {}, [](uint16_t) {}};
+  sg::ui::minigameStart(io, 42);
+  shot("minigame_ready");
+  run(6000);
+  shot("minigame");
   return 0;
 }

@@ -26,7 +26,7 @@ const char *stageName(Stage stage) {
     case Stage::Core: return "Core";
     case Stage::Mini: return "Mini-Bot";
     case Stage::Junior: return "Junior-Bot";
-    case Stage::Astro: return "Astro-Bot";
+    case Stage::Astro: return "Nova-Bot";
     case Stage::Combat: return "Combat-Bot";
     case Stage::Scrap: return "Scrap-Bot";
   }

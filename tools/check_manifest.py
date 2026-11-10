@@ -16,6 +16,10 @@ def main(path):
     with open(path) as f:
         manifest = json.load(f)
     errors = []
+    # Without this flag ESP Web Tools silently erases the whole flash (and the
+    # bot) on every install; with it the user gets an "Erase device" checkbox.
+    if manifest.get("new_install_prompt_erase") is not True:
+        errors.append("new_install_prompt_erase must be true, otherwise every install wipes the save")
     for build in manifest.get("builds", []):
         for part in build.get("parts", []):
             name, offset = part["path"], int(part["offset"])

@@ -15,6 +15,7 @@ namespace hal {
 namespace {
 
 constexpr uint32_t kTickMs = 2;
+constexpr size_t kBufLines = 48;
 
 Arduino_DataBus *bus = nullptr;
 Arduino_CO5300 *gfx = nullptr;
@@ -54,10 +55,17 @@ bool displayBegin() {
 
   lv_init();
 
-  const size_t px = LCD_WIDTH * LCD_HEIGHT / 4;
-  auto *buf1 = (lv_color_t *)heap_caps_malloc(px * sizeof(lv_color_t), MALLOC_CAP_DMA);
-  auto *buf2 = (lv_color_t *)heap_caps_malloc(px * sizeof(lv_color_t), MALLOC_CAP_DMA);
-  if (!buf1 || !buf2) return false;
+  // Two 48-line buffers in fast internal RAM (~89 KB). Full-screen buffers do
+  // not fit next to the LVGL pool; fall back to PSRAM if internal RAM is short.
+  const size_t px = LCD_WIDTH * kBufLines;
+  auto alloc = [px]() {
+    void *p = heap_caps_malloc(px * sizeof(lv_color_t), MALLOC_CAP_INTERNAL | MALLOC_CAP_8BIT);
+    if (!p) p = heap_caps_malloc(px * sizeof(lv_color_t), MALLOC_CAP_SPIRAM);
+    return static_cast<lv_color_t *>(p);
+  };
+  lv_color_t *buf1 = alloc();
+  lv_color_t *buf2 = alloc();
+  if (!buf1) return false;
   lv_disp_draw_buf_init(&drawBuf, buf1, buf2, px);
 
   lv_disp_drv_init(&dispDrv);
@@ -79,6 +87,12 @@ bool displayBegin() {
 
 void displaySetBrightness(uint8_t level) {
   if (gfx) gfx->setBrightness(level);
+}
+
+void displaySleep(bool sleep) {
+  if (!gfx) return;
+  if (sleep) gfx->displayOff();
+  else gfx->displayOn();
 }
 
 }  // namespace hal

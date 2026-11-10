@@ -14,7 +14,7 @@ void ScreenPower::wake(uint32_t ms) {
 }
 
 ScreenPower::Mode ScreenPower::update(uint32_t ms) {
-  const uint32_t idle = ms - lastActivity_;
+  const uint32_t idle = ms > lastActivity_ ? ms - lastActivity_ : 0;
   if (idle >= kOffMs) mode_ = Off;
   else if (idle >= kDimMs) mode_ = Dim;
   else mode_ = On;

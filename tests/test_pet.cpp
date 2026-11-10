@@ -205,4 +205,27 @@ TEST(reboot_halves_xp) {
   CHECK(p.zeroSince == 0);
 }
 
+TEST(clock_set_backwards_no_instant_evolution) {
+  Pet p = newPet(at(0, 15));
+  advance(p, at(0, 15, 10));
+  advance(p, at(0, 13));
+  advance(p, at(0, 13) + 1);
+  CHECK(p.stage == Stage::Core);
+  CHECK(p.bornAt == at(0, 12, 50));
+}
+
+TEST(clock_set_backwards_no_instant_shutdown) {
+  Pet p = newPet(at(0, 12));
+  p.oil = p.mood = 0;
+  advance(p, at(0, 12, 30));
+  CHECK(p.zeroSince != 0);
+  advance(p, at(0, 11, 30));
+  advance(p, at(0, 11, 31));
+  CHECK(!p.shutdown);
+  advance(p, at(0, 18, 59));
+  CHECK(!p.shutdown);
+  advance(p, at(0, 19, 0));
+  CHECK(p.shutdown);
+}
+
 RUN_TESTS()

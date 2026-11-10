@@ -58,4 +58,10 @@ TEST(wake_without_touch) {
   CHECK(sp.update(99999) == ScreenPower::On);
 }
 
+TEST(update_with_earlier_timestamp_stays_on) {
+  ScreenPower sp;
+  sp.onTouch(100003);
+  CHECK(sp.update(100000) == ScreenPower::On);
+}
+
 RUN_TESTS()

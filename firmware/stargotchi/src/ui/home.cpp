@@ -24,6 +24,7 @@ lv_timer_t *animTimer;
 Stage shownStage = Stage::Core;
 bool shownShutdown = false;
 bool asleep = false;
+bool screenOff = false;
 uint32_t animTick = 0;
 
 void setText(lv_obj_t *l, const char *t) {
@@ -196,7 +197,7 @@ void homeRefresh(const Pet &p, uint32_t now, int battery, bool charging) {
   const bool nowAsleep = isAsleep(p, now) && !p.shutdown;
   if (nowAsleep != asleep || p.shutdown != shownShutdown) {
     asleep = nowAsleep;
-    if (asleep || p.shutdown) stopBob();
+    if (asleep || p.shutdown || screenOff) stopBob();
     else startBob();
   }
   setVisible(zzzLbl, asleep);
@@ -214,6 +215,17 @@ void homeRefresh(const Pet &p, uint32_t now, int battery, bool charging) {
   setVisible(rebootBtn, p.shutdown);
   // The dock button glows while docked.
   lv_obj_set_style_bg_color(btns[2], lv_color_hex(p.docked ? 0x0F6E56 : theme::kTrack), 0);
+}
+
+void homeSetSleeping(bool sleeping) {
+  screenOff = sleeping;
+  if (sleeping) {
+    lv_timer_pause(animTimer);
+    stopBob();
+  } else {
+    lv_timer_resume(animTimer);
+    if (!asleep && !shownShutdown) startBob();
+  }
 }
 
 void homeCelebrate() {

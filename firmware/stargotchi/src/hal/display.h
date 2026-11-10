@@ -10,5 +10,8 @@ bool displayBegin();
 // 0 = off, 255 = full.
 void displaySetBrightness(uint8_t level);
 
+// Panel sleep (true) / wake (false); used when the screen times out.
+void displaySleep(bool sleep);
+
 }  // namespace hal
 }  // namespace sg

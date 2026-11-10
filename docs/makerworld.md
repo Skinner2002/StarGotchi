@@ -8,7 +8,7 @@ Turn the Waveshare ESP32-S3 1.75" round AMOLED board into a little space-adventu
 virtual pet. Your bot starts as a glowing energy core and grows into a Mini-Bot, a
 Junior-Bot and finally one of three forms – depending on how you look after it:
 
-- **Astro-Bot** – balanced, good care
+- **Nova-Bot** – balanced, good care
 - **Combat-Bot** – lots of play and training
 - **Scrap-Bot** – neglected, crooked, but still lovable
 
@@ -45,7 +45,7 @@ Source code and issues: https://github.com/Skinner2002/stargotchi
 Verwandelt das runde Waveshare ESP32-S3 1,75"-AMOLED-Board in ein kleines virtuelles
 Haustier im Weltraum-Abenteuer-Stil. Dein Bot startet als leuchtender Energiekern und
 entwickelt sich zum Mini-Bot, Junior-Bot und schließlich – je nach Pflege – zum
-**Astro-Bot**, **Kampf-Bot** oder **Schrott-Bot**.
+**Nova-Bot**, **Kampf-Bot** oder **Schrott-Bot**.
 
 Halte vier Systeme am Laufen: **Öl**, **Laune**, **Ladung** und **Zustand**. Öl
 nachfüllen, das Neige-Minispiel *Asteroid Run* spielen, auf der Ladestation aufladen

@@ -25,7 +25,7 @@ void updateShutdown(Pet &p, uint32_t t, uint32_t end) {
     return;
   }
   if (p.zeroSince == 0) p.zeroSince = t;
-  if (end - p.zeroSince >= kShutdownAfter) p.shutdown = true;
+  if (end >= p.zeroSince && end - p.zeroSince >= kShutdownAfter) p.shutdown = true;
 }
 
 Stage finalForm(const Pet &p) {
@@ -36,6 +36,7 @@ Stage finalForm(const Pet &p) {
 }
 
 void updateStage(Pet &p, uint32_t end) {
+  if (end < p.bornAt) return;
   const uint32_t age = end - p.bornAt;
   if (p.stage == Stage::Core && age >= 1 * kDay) p.stage = Stage::Mini;
   if (p.stage == Stage::Mini && age >= 3 * kDay) p.stage = Stage::Junior;
@@ -81,6 +82,11 @@ bool isAsleep(const Pet &p, uint32_t now) { return p.docked || isNight(now); }
 
 void advance(Pet &p, uint32_t now) {
   if (now <= p.lastUpdate) {
+    // Clock moved backwards: shift the pet's history with it so age and the
+    // shutdown timer keep their current values.
+    const uint32_t back = p.lastUpdate - now;
+    p.bornAt = p.bornAt > back ? p.bornAt - back : 0;
+    if (p.zeroSince) p.zeroSince = p.zeroSince > back ? p.zeroSince - back : 1;
     p.lastUpdate = now;
     return;
   }

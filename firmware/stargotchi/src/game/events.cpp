@@ -33,4 +33,12 @@ void rebaseTime(Pet &p, uint32_t newNow) {
   p.lastUpdate = newNow;
 }
 
+static uint32_t absDiff(uint32_t x, uint32_t y) { return x > y ? x - y : y - x; }
+
+bool acceptClock(uint32_t last, uint32_t a, uint32_t b) {
+  if (!isValidTime(fromEpoch(a))) return false;
+  if (last == 0 || absDiff(a, last) <= 120) return true;
+  return absDiff(a, b) <= 2;
+}
+
 }  // namespace sg

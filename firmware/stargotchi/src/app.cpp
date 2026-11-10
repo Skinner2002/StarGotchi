@@ -31,6 +31,7 @@ ScreenPower::Mode appliedMode = ScreenPower::On;
 uint8_t brightness = 200;
 bool clockValid = false;
 uint32_t lastTick = 0, lastSave = 0, lastBattery = 0;
+uint32_t lastClock = 0;  // last accepted RTC reading
 int battery = -1;
 bool charging = false;
 
@@ -45,8 +46,11 @@ void refreshUi(uint32_t now) { ui::refresh(pet, now, battery, charging); }
 
 // Advances the pet to "now" and reacts to evolution / new low stats.
 uint32_t tickPet() {
-  const uint32_t now = hal::rtcNow();
+  uint32_t now = hal::rtcNow();
   if (!clockValid) return now;
+  // Ignore a single garbage RTC reading instead of applying weeks of decay.
+  if (!acceptClock(lastClock, now, hal::rtcNow())) return lastClock ? lastClock : now;
+  lastClock = now;
   const Stage before = pet.stage;
   const bool wasShutdown = pet.shutdown;
   advance(pet, now);
@@ -69,6 +73,13 @@ uint32_t tickPet() {
 
 void applyScreenMode(ScreenPower::Mode m) {
   if (m == appliedMode) return;
+  if (m == ScreenPower::Off) {
+    hal::displaySleep(true);
+    ui::setSleeping(true);
+  } else if (appliedMode == ScreenPower::Off) {
+    hal::displaySleep(false);
+    ui::setSleeping(false);
+  }
   appliedMode = m;
   hal::displaySetBrightness(m == ScreenPower::On ? brightness
                             : m == ScreenPower::Dim ? (brightness < kDimLevel ? brightness : kDimLevel)
@@ -122,9 +133,11 @@ void onAction(ui::Action a, uint32_t arg) {
       break;
     case ui::Action::SetTime: {
       const uint32_t target = clockSetTarget(now, clockValid, arg);
-      if (!clockValid) rebaseTime(pet, target);
+      // Always rebase: setting the clock is a correction, not time passing.
+      rebaseTime(pet, target);
       hal::rtcSet(target);
       clockValid = hal::rtcValid();
+      lastClock = clockValid ? target : 0;
       if (clockValid) {
         ui::showTimePrompt(false);
         ui::goHome();
@@ -156,7 +169,10 @@ void onAction(ui::Action a, uint32_t arg) {
 
 void appSetup() {
   Serial.begin(115200);
-  hal::displayBegin();
+  if (!hal::displayBegin()) {
+    Serial.println("StarGotchi: display init failed");
+    for (;;) delay(1000);
+  }
   hal::i2cBegin();
   hal::touchBegin();
   hal::rtcBegin();
@@ -174,8 +190,12 @@ void appSetup() {
   const uint32_t now = hal::rtcNow();
   uint8_t buf[kSaveMaxSize];
   size_t len = 0;
-  if (!(hal::nvsLoad(buf, sizeof buf, len) && decodePet(buf, len, pet))) pet = newPet(now);
-  if (clockValid) advance(pet, now);
+  const bool loaded = hal::nvsLoad(buf, sizeof buf, len) && decodePet(buf, len, pet);
+  if (!loaded) pet = newPet(now);
+  if (clockValid) {
+    advance(pet, now);
+    lastClock = now;
+  }
   newLowStats(lowAlerts, pet);  // no alert beeps for stats that were already low
 
   ui::build(onAction, ui::Settings{brightness, sound});
@@ -183,15 +203,16 @@ void appSetup() {
   battery = hal::batteryPercent();
   charging = hal::isCharging();
   refreshUi(now);
-  if (!clockValid) ui::showTimePrompt(true);
+  // Very first start (or a lost clock): ask for the time, as the spec says.
+  if (!clockValid || !loaded) ui::showTimePrompt(true);
   screen.wake(millis());
   save();
   hal::beep(784, 60);
 }
 
 void appLoop() {
-  const uint32_t ms = millis();
   lv_timer_handler();
+  const uint32_t ms = millis();  // after the handler: touches inside it use later times
 
   if (ui::minigameActive()) screen.wake(ms);
   applyScreenMode(screen.update(ms));

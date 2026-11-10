@@ -19,6 +19,11 @@ uint32_t clockSetTarget(uint32_t now, bool nowValid, uint32_t minutesOfDay);
 // for the unknown gap). Used when the clock was not valid.
 void rebaseTime(Pet &p, uint32_t newNow);
 
+// Plausibility check for an RTC reading `a` (with an optional second reading
+// `b`): must be a valid date and either close to the last accepted time or
+// confirmed by the second reading. `last` == 0 means no previous reading.
+bool acceptClock(uint32_t last, uint32_t a, uint32_t b);
+
 inline bool evolved(Stage before, Stage after) { return before != after; }
 
 }  // namespace sg

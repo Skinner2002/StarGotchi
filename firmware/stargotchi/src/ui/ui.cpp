@@ -85,6 +85,8 @@ void showTimePrompt(bool show) {
 
 void celebrate() { homeCelebrate(); }
 
+void setSleeping(bool sleeping) { homeSetSleeping(sleeping); }
+
 void goHome() { lv_obj_set_tile_id(tileview, 1, 0, LV_ANIM_ON); }
 
 void debugShowPage(int index) {

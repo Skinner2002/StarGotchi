@@ -23,6 +23,7 @@ void refresh(const Pet &pet, uint32_t now, int battery, bool charging);
 void showTimePrompt(bool show);  // jumps to Setup and highlights the clock
 void celebrate();                 // evolution flash
 void goHome();
+void setSleeping(bool sleeping);  // pause animations while the screen is off
 void debugShowPage(int index);  // 0 Stats, 1 Home, 2 Setup (no animation)
 
 }  // namespace ui

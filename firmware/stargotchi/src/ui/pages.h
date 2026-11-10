@@ -12,6 +12,7 @@ void emit(Action a, uint32_t arg = 0);
 void homeBuild(lv_obj_t *tile);
 void homeRefresh(const Pet &pet, uint32_t now, int battery, bool charging);
 void homeCelebrate();
+void homeSetSleeping(bool sleeping);
 
 void statsBuild(lv_obj_t *tile);
 void statsRefresh(const Pet &pet, uint32_t now, int battery);

@@ -59,4 +59,14 @@ TEST(stage_change_detected) {
   CHECK(!evolved(Stage::Mini, Stage::Mini));
 }
 
+TEST(clock_reading_acceptance) {
+  const uint32_t t = kDay0 + 12 * 3600;
+  CHECK(acceptClock(0, t, t));                     // first reading
+  CHECK(acceptClock(t, t + 1, t + 1));             // normal tick
+  CHECK(acceptClock(t, t + 90, t + 90));           // small hiccup
+  CHECK(!acceptClock(t, t + 20 * 86400, t + 5));   // garbage jump not confirmed
+  CHECK(acceptClock(t, t + 3600, t + 3601));       // confirmed jump (clock really moved)
+  CHECK(!acceptClock(t, 946684800u, 946684800u));  // year 2000 = invalid
+}
+
 RUN_TESTS()

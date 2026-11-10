@@ -65,7 +65,7 @@ Board übernommen.
 2. **Mini-Bot** – nach ca. 1 Tag
 3. **Junior-Bot** – nach ca. 3 Tagen
 4. **Endform** – nach ca. 7 Tagen, bestimmt durch den Pflege-Verlauf:
-   - **Astro-Bot**: ausgewogen gute Pflege (Durchschnitt aller Werte hoch)
+   - **Nova-Bot**: ausgewogen gute Pflege (Durchschnitt aller Werte hoch)
    - **Kampf-Bot**: überdurchschnittlich viel Spielen/Training
    - **Schrott-Bot**: vernachlässigt (Durchschnitt niedrig) – schief, aber liebenswert
 - Level/XP steigen durch Pflegeaktionen und Minispiel-Punkte.

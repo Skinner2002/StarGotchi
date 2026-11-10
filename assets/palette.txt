@@ -1,0 +1,16 @@
+; StarGotchi palette: one "char #RRGGBB" per line, '.' is transparent.
+O #3A4356
+W #F1EFE8
+L #D3D1C7
+G #888780
+D #5F5E5A
+K #2C2C2A
+B #378ADD
+b #85B7EB
+c #5DCAA5
+A #EF9F27
+a #BA7517
+Y #FAC775
+R #E24B4A
+r #993C1D
+V #7F77DD

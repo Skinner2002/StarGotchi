@@ -3,6 +3,7 @@
 #include <lvgl.h>
 
 #include "src/hal/display.h"
+#include "src/hal/hal.h"
 
 #ifndef SG_VERSION
 #define SG_VERSION "dev"
@@ -14,6 +15,13 @@ void setup() {
     Serial.println("display init failed");
     return;
   }
+  sg::hal::i2cBegin();
+  sg::hal::touchBegin();
+  sg::hal::rtcBegin();
+  sg::hal::imuBegin();
+  sg::hal::powerBegin();
+  sg::hal::audioBegin();
+  sg::hal::beep(880, 120);
   lv_obj_t *scr = lv_scr_act();
   lv_obj_set_style_bg_color(scr, lv_color_black(), 0);
 

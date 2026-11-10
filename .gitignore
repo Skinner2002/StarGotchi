@@ -5,3 +5,4 @@ site/
 *.o
 a.out
 tests/bin/
+sim_out/

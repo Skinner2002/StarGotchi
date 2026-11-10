@@ -30,6 +30,11 @@ check("bytes", frames[0] == bytes([0x00, 0xF8, 0xFF, 0, 0, 0, 0, 0, 0, 0x1F, 0x0
 two, _ = sprites.parse_sprite("t.txt", "1x1 frames=2\nR\n\nB\n", PALETTE)
 check("two_frames", len(two) == 2 and two[1] == bytes([0x1F, 0x00, 0xFF]))
 
+big, bsize = sprites.parse_sprite("t.txt", "1x2 frames=1 scale=2\nR\nB\n", PALETTE)
+check("scaled_size", bsize == (2, 4))
+red, blue = bytes([0x00, 0xF8, 0xFF]), bytes([0x1F, 0x00, 0xFF])
+check("scaled_bytes", big[0] == red * 4 + blue * 4)
+
 try:
     sprites.parse_sprite("bad.txt", "2x2 frames=1\nRRR\n.B\n", PALETTE)
     check("width_error_raised", False)

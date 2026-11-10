@@ -2,7 +2,7 @@
 """Converts hand-authored pixel maps into LVGL 8 image arrays + PNG previews.
 
 Pixel map format (assets/sprites/<name>.txt):
-    line 1:  WxH frames=N
+    line 1:  WxH frames=N [scale=S]   (S = integer pixel scale baked into the output)
     then N blocks of H lines with W characters, blank lines between blocks.
     '.' = transparent, any other character = colour from assets/palette.txt
     (one "C #RRGGBB" per line, '#' lines starting with ';' are comments).
@@ -42,10 +42,11 @@ def rgb565(rgb):
 def parse_sprite(name, text, palette):
     """Returns (frames, (w, h)); each frame is bytes in LV_IMG_CF_TRUE_COLOR_ALPHA."""
     lines = text.splitlines()
-    m = re.match(r"(\d+)x(\d+)\s+frames=(\d+)", lines[0].strip())
+    m = re.match(r"(\d+)x(\d+)\s+frames=(\d+)(?:\s+scale=(\d+))?", lines[0].strip())
     if not m:
         raise ValueError(f"{name}: line 1 must look like '32x32 frames=2'")
-    w, h, n = (int(v) for v in m.groups())
+    w, h, n = (int(v) for v in m.groups()[:3])
+    sc = int(m.group(4) or 1)
     frames, rows, lineno = [], [], 1
     for raw in lines[1:]:
         lineno += 1
@@ -63,13 +64,15 @@ def parse_sprite(name, text, palette):
                 out += bytes([c & 0xFF, c >> 8, 0xFF])
             else:
                 raise ValueError(f"{name}: line {lineno} uses unknown colour '{ch}'")
-        rows.append(bytes(out))
-        if len(rows) == h:
+        px = [bytes(out[i:i + 3]) for i in range(0, len(out), 3)]
+        wide = b"".join(p * sc for p in px)
+        rows.extend([wide] * sc)
+        if len(rows) == h * sc:
             frames.append(b"".join(rows))
             rows = []
     if rows or len(frames) != n:
         raise ValueError(f"{name}: expected {n} frames of {h} rows, got {len(frames)} (+{len(rows)} rows)")
-    return frames, (w, h)
+    return frames, (w * sc, h * sc)
 
 
 def load_all():
@@ -115,7 +118,7 @@ def gen_h(sprites):
     return "\n".join(out)
 
 
-def write_pngs(palette, sprites, scale=8):
+def write_pngs(palette, sprites, scale=2):
     from PIL import Image
     os.makedirs(PNG_DIR, exist_ok=True)
     for name, (w, h), frames in sprites:

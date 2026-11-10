@@ -6,3 +6,4 @@ site/
 a.out
 tests/bin/
 sim_out/
+__pycache__/

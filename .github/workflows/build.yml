@@ -53,8 +53,14 @@ jobs:
           arduino-cli lib update-index
           arduino-cli lib install --no-deps "lvgl@8.4.0" "GFX Library for Arduino@1.6.4" "SensorLib@0.3.1" "XPowersLib@0.2.6"
           cp firmware/lv_conf.h ~/Arduino/libraries/lv_conf.h
+          arduino-cli lib list
+          echo "::notice::$(arduino-cli lib list | tr '\n' ' ')"
       - name: Compile
-        run: tools/build.sh "$SG_VERSION"
+        run: |
+          set -o pipefail
+          tools/build.sh "$SG_VERSION" 2>&1 | tee build.log || {
+            grep -E "error|Error|No such file" build.log | head -20 | while IFS= read -r l; do echo "::error::$l"; done
+            exit 1; }
       - name: Assemble installer site
         run: tools/make_site.sh "$SG_VERSION"
       - uses: actions/upload-pages-artifact@v3

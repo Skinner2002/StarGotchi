@@ -1,3 +1,4 @@
+#include <ctime>
 #include "check.h"
 #include "game/pet.h"
 
@@ -110,6 +111,98 @@ TEST(status_text) {
   CHECK(std::string(statusText(p, at(0, 23))) == "Recharging...");
   p.shutdown = true;
   CHECK(std::string(statusText(p, at(0, 12))) == "Emergency shutdown");
+}
+
+static void careHourly(Pet &p, uint32_t from, int hours) {
+  for (int h = 1; h <= hours; h++) {
+    p.oil = p.mood = p.power = p.cond = 90;
+    advance(p, from + h * 3600u);
+  }
+}
+
+TEST(evolves_on_age) {
+  Pet p = newPet(at(0, 12));
+  careHourly(p, at(0, 12), 23);
+  CHECK(p.stage == Stage::Core);
+  careHourly(p, at(0, 12) + 23 * 3600u, 1);
+  CHECK(p.stage == Stage::Mini);
+  careHourly(p, at(1, 12), 48);
+  CHECK(p.stage == Stage::Junior);
+  careHourly(p, at(3, 12), 96);
+  CHECK(p.stage == Stage::Astro);
+}
+
+TEST(neglect_gives_scrap) {
+  Pet p = newPet(at(0, 12));
+  for (int h = 1; h <= 7 * 24; h++) {
+    advance(p, at(0, 12) + h * 3600u);
+    if (p.shutdown) rebootPet(p, p.lastUpdate);
+  }
+  CHECK(p.stage == Stage::Scrap);
+}
+
+TEST(play_heavy_gives_combat) {
+  Pet p = newPet(at(0, 12));
+  for (int i = 0; i < 5; i++) recordPlay(p);
+  for (int i = 0; i < 4; i++) feed(p);
+  careHourly(p, at(0, 12), 7 * 24);
+  CHECK(p.stage == Stage::Combat);
+}
+
+TEST(shutdown_after_8h_two_zero) {
+  Pet p = newPet(at(0, 9));
+  p.oil = p.mood = 0;
+  p.power = p.cond = 100;
+  advance(p, at(0, 17) - 60);
+  CHECK(!p.shutdown);
+  advance(p, at(0, 17));
+  CHECK(p.shutdown);
+}
+
+TEST(one_zero_no_shutdown) {
+  Pet p = newPet(at(0, 12));
+  for (int h = 1; h <= 24; h++) {
+    p.oil = 0;
+    p.mood = p.power = p.cond = 90;
+    advance(p, at(0, 12) + h * 3600u);
+  }
+  CHECK(!p.shutdown);
+}
+
+TEST(stat_recovery_resets_zero_timer) {
+  Pet p = newPet(at(0, 9));
+  p.oil = p.mood = 0;
+  advance(p, at(0, 16));
+  feed(p);
+  advance(p, at(0, 17));
+  CHECK(!p.shutdown);
+  CHECK(p.zeroSince == 0);
+}
+
+TEST(month_offline_triggers_shutdown) {
+  Pet p = newPet(at(0, 12));
+  const clock_t c0 = clock();
+  advance(p, at(30, 12));
+  const double ms = 1000.0 * (clock() - c0) / CLOCKS_PER_SEC;
+  CHECK(p.shutdown);
+  CHECK(ms < 100);
+  CHECK(p.lastUpdate == at(30, 12));
+}
+
+TEST(reboot_halves_xp) {
+  Pet p = newPet(at(0, 12));
+  p.xp = 300;
+  p.stage = Stage::Junior;
+  CHECK(!rebootPet(p, at(0, 12)));
+  p.shutdown = true;
+  p.zeroSince = at(0, 1);
+  CHECK(rebootPet(p, at(0, 12)));
+  CHECK(p.xp == 150);
+  CHECK_NEAR(p.oil, 50, 0.001);
+  CHECK_NEAR(p.cond, 50, 0.001);
+  CHECK(p.stage == Stage::Junior);
+  CHECK(!p.shutdown);
+  CHECK(p.zeroSince == 0);
 }
 
 RUN_TESTS()

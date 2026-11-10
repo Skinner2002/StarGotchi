@@ -26,6 +26,8 @@ void advance(Pet &p, uint32_t now);          // catch up in 60 s steps (max 30 d
 void feed(Pet &p);                           // oil +30, xp +10
 void repair(Pet &p);                         // cond +40, xp +10
 void toggleDock(Pet &p);
+void recordPlay(Pet &p);                     // mini-game played
+bool rebootPet(Pet &p, uint32_t now);        // only when shut down: stats 50, xp halved
 uint16_t level(const Pet &p);                // 1 + xp / 100
 const char *statusText(const Pet &p, uint32_t now);
 

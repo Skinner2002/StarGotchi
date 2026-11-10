@@ -104,8 +104,10 @@ Board übernommen.
 ## 5. Technik
 
 ### 5.1 Werkzeuge
-- **Arduino-Framework + LVGL 9**, gebaut mit **PlatformIO**.
-- Repository: `github.com/Skinner2002/StarGotchi` (öffentlich).
+- **Arduino-Framework (ESP32 Arduino Core 3.3.10) + LVGL 8.4.0**, gebaut mit **arduino-cli** –
+  exakt die Kombination, mit der Waveshare die Beispiele für dieses Board in seiner CI baut
+  (geringstes Risiko, dass Display/Touch nicht laufen).
+- Repository: `github.com/Skinner2002/stargotchi` (öffentlich).
 
 ### 5.2 Bausteine der Firmware
 | Baustein | Aufgabe | Hängt ab von |
@@ -127,9 +129,9 @@ Board übernommen.
 
 ### 5.4 Build & Web-Installer
 1. Jede Änderung auf GitHub startet **GitHub Actions**:
-   Tests der Spiel-Logik (PlatformIO `native`) → Firmware bauen.
+   Tests der Spiel-Logik (mit g++ auf dem Build-Server) → Firmware bauen.
 2. Die Firmware landet zusammen mit einer **ESP-Web-Tools**-Installer-Seite
-   auf **GitHub Pages**: `https://skinner2002.github.io/StarGotchi/`
+   auf **GitHub Pages**: `https://skinner2002.github.io/stargotchi/`
 3. Nutzer: Gerät per USB an PC, Seite in Chrome/Edge öffnen, „Install" klicken.
 4. Die Seite zeigt die aktuelle Versionsnummer.
 

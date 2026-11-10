@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>StarGotchi Installer</title>
+  <script type="module" src="https://unpkg.com/esp-web-tools@10/dist/web/install-button.js?module"></script>
+  <style>
+    :root { color-scheme: dark; }
+    body { margin: 0; background: #05060a; color: #d3d1c7; font: 16px/1.6 "Courier New", ui-monospace, monospace; }
+    main { max-width: 640px; margin: 0 auto; padding: 48px 20px; }
+    h1 { color: #85b7eb; font-size: 40px; letter-spacing: 4px; margin: 0 0 4px; }
+    .tag { color: #ef9f27; margin: 0 0 32px; }
+    .card { border: 1px solid #2c2c2a; border-radius: 12px; padding: 20px 24px; margin: 24px 0; background: #0b0c12; }
+    ol { padding-left: 20px; } li { margin: 6px 0; }
+    .warn { color: #ef9f27; }
+    .install { text-align: center; margin: 32px 0; }
+    esp-web-install-button button[slot="activate"] {
+      background: #378add; color: #fff; border: 0; border-radius: 10px; padding: 14px 32px;
+      font: inherit; font-size: 18px; letter-spacing: 2px; cursor: pointer; }
+    .muted { color: #888780; font-size: 14px; }
+    .stars { position: fixed; inset: 0; z-index: -1;
+      background-image: radial-gradient(1px 1px at 10% 20%, #b4b2a9, transparent),
+        radial-gradient(1px 1px at 70% 30%, #b4b2a9, transparent),
+        radial-gradient(1px 1px at 40% 80%, #b4b2a9, transparent),
+        radial-gradient(1px 1px at 85% 75%, #b4b2a9, transparent),
+        radial-gradient(1px 1px at 25% 55%, #888780, transparent); }
+  </style>
+</head>
+<body>
+  <div class="stars"></div>
+  <main>
+    <h1>STARGOTCHI</h1>
+    <p class="tag">A pocket bot that needs your care.</p>
+
+    <div class="card">
+      <strong>You need</strong>
+      <ul>
+        <li>Waveshare ESP32-S3-Touch-AMOLED-1.75 (with or without case)</li>
+        <li>A USB-C data cable</li>
+        <li>A computer with Chrome or Edge</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <strong>Install</strong>
+      <ol>
+        <li>Plug the board into your computer.</li>
+        <li>Click <em>Install StarGotchi</em> and pick the serial port.</li>
+        <li><span class="warn">Updating? Leave "Erase device" unticked</span> &ndash; your bot stays alive.</li>
+        <li>Wait until it says done, then unplug. Set the clock on first start.</li>
+      </ol>
+      <p class="muted">Deutsch: Board per USB anschließen, auf den Knopf klicken, Port wählen.
+        Bei Updates &bdquo;Erase device&ldquo; NICHT anhaken, sonst ist dein Bot weg.</p>
+    </div>
+
+    <div class="install">
+      <esp-web-install-button manifest="manifest.json">
+        <button slot="activate">INSTALL STARGOTCHI</button>
+        <span slot="unsupported">Your browser can't do this. Please use Chrome or Edge on a computer.</span>
+        <span slot="not-allowed">Please open this page over https.</span>
+      </esp-web-install-button>
+      <p class="muted">Version <span id="ver">&hellip;</span></p>
+    </div>
+
+    <p class="muted">If no port shows up: try another cable (some only charge) or hold BOOT while plugging in.</p>
+  </main>
+  <script>
+    fetch("version.txt").then(r => r.text()).then(t => {
+      document.getElementById("ver").textContent = t.trim();
+    }).catch(() => {});
+  </script>
+</body>
+</html>

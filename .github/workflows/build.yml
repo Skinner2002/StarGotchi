@@ -1,0 +1,73 @@
+name: Build and publish
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install pillow
+      - name: Unit tests
+        run: tools/run_tests.sh
+
+  build:
+    needs: test
+    runs-on: ubuntu-latest
+    env:
+      SG_VERSION: 1.0.${{ github.run_number }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: arduino/setup-arduino-cli@v2
+        with:
+          version: 1.3.1
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.arduino15/packages
+            ~/Arduino/libraries
+          key: arduino-esp32-3.3.10-lvgl-8.4.0-v1
+      - name: Install core and libraries
+        run: |
+          arduino-cli config init --overwrite
+          arduino-cli config add board_manager.additional_urls https://espressif.github.io/arduino-esp32/package_esp32_index.json
+          arduino-cli core update-index
+          arduino-cli core install esp32:esp32@3.3.10
+          arduino-cli lib update-index
+          arduino-cli lib install --no-deps "lvgl@8.4.0" "GFX Library for Arduino@1.6.4" "SensorLib@0.3.1" "XPowersLib@0.2.6"
+          cp firmware/lv_conf.h ~/Arduino/libraries/lv_conf.h
+      - name: Compile
+        run: tools/build.sh "$SG_VERSION"
+      - name: Assemble installer site
+        run: tools/make_site.sh "$SG_VERSION"
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+  deploy:
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

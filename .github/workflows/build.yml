@@ -42,16 +42,24 @@ jobs:
         with:
           path: |
             ~/.arduino15/packages
-            ~/Arduino/libraries
-          key: arduino-esp32-3.3.10-lvgl-8.4.0-v1
+          key: arduino-esp32-3.3.10-v1
       - name: Install core and libraries
         run: |
           arduino-cli config init --overwrite
           arduino-cli config add board_manager.additional_urls https://espressif.github.io/arduino-esp32/package_esp32_index.json
           arduino-cli core update-index
           arduino-cli core install esp32:esp32@3.3.10
-          arduino-cli lib update-index
-          arduino-cli lib install --no-deps "lvgl@8.4.0" "GFX Library for Arduino@1.6.4" "SensorLib@0.3.1" "XPowersLib@0.2.6"
+          # Use the exact library copies Waveshare ships and tests for this board
+          # (the Library Manager's GFX 1.6.4 does not compile against core 3.3.x).
+          git clone --filter=blob:none --sparse https://github.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.75 ws
+          git -C ws checkout e4344e70c2fa78a13e8a06566507f1ba8af6672a
+          git -C ws sparse-checkout set examples/arduino/libraries
+          mkdir -p ~/Arduino/libraries
+          for l in lvgl GFX_Library_for_Arduino SensorLib XPowersLib; do
+            rm -rf ~/Arduino/libraries/$l
+            cp -r ws/examples/arduino/libraries/$l ~/Arduino/libraries/
+          done
+          rm -rf ~/Arduino/libraries/lvgl/demos ~/Arduino/libraries/lvgl/examples
           cp firmware/lv_conf.h ~/Arduino/libraries/lv_conf.h
           arduino-cli lib list
           echo "::notice::$(arduino-cli lib list | tr '\n' ' ')"

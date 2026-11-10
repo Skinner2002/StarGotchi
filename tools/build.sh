@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 # Compiles the firmware with arduino-cli. Usage: tools/build.sh [version]
-# Requires: core esp32:esp32@3.3.10, libs lvgl 8.4.0, GFX Library for Arduino 1.6.4,
-# SensorLib 0.3.1, XPowersLib 0.2.6, and firmware/lv_conf.h copied next to the
-# Arduino libraries folder (see .github/workflows/build.yml).
+# Requires: core esp32:esp32@3.3.10 and the lvgl / GFX_Library_for_Arduino /
+# SensorLib / XPowersLib copies from waveshareteam/ESP32-S3-Touch-AMOLED-1.75
+# (examples/arduino/libraries, commit e4344e7) plus firmware/lv_conf.h in the
+# Arduino libraries folder. See .github/workflows/build.yml.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 VERSION="${1:-dev}"

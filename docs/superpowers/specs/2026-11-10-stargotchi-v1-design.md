@@ -71,7 +71,7 @@ Board übernommen.
 - Level/XP steigen durch Pflegeaktionen und Minispiel-Punkte.
 
 ### 3.4 Vernachlässigung
-- Sind mindestens zwei Werte 12 Stunden lang auf 0 → **Notabschaltung**.
+- Sind mindestens zwei Werte 8 Stunden lang auf 0 → **Notabschaltung**.
 - Kein „Tod": Der Bot kann neu hochgefahren werden, verliert aber Level-Fortschritt
   (Level −50 %, Entwicklungsstufe bleibt).
 
@@ -97,7 +97,6 @@ Board übernommen.
 - Start über das Gamepad-Icon. Der Bot fliegt durch ein Asteroidenfeld;
   Steuerung durch Neigen des Geräts (QMI8658).
 - Ca. 30–60 Sekunden; Punkte → Laune + XP, kostet Ladung.
-- Touch-Fallback: links/rechts tippen, falls Neigen nicht gewünscht.
 
 ### 4.4 Display-Verhalten
 - Nach 30 s ohne Berührung dimmen, danach Display aus. Tippen weckt.
@@ -151,3 +150,4 @@ Board übernommen.
 - Erkunden / Schrottsuche
 - Eigenes 3D-gedrucktes Gehäuse
 - Mehrsprachigkeit
+- Alternative Tipp-Steuerung fürs Minispiel (vorerst verworfen: Display zu klein)

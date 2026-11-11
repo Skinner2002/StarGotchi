@@ -4,6 +4,7 @@
 
 #include "../assets/bot_frames.h"
 #include "../assets/sprites.h"
+#include "../game/wander.h"
 #include "background.h"
 #include "pages.h"
 #include "theme.h"
@@ -27,6 +28,12 @@ uint8_t shownLine = 0;
 bool shownShutdown = false;
 bool asleep = false;
 bool screenOff = false;
+
+// idle walking
+lv_obj_t *shadow;
+lv_timer_t *walkTimer;
+int walkX = 0;
+uint32_t walkRng = 0x9E3779B9u;
 uint32_t animTick = 0;
 
 void setText(lv_obj_t *l, const char *t) {
@@ -80,6 +87,37 @@ lv_obj_t *iconButton(lv_obj_t *parent, const lv_img_dsc_t *icon, uint32_t color,
 }
 
 void bob(void *obj, int32_t v) { lv_obj_set_style_translate_y(static_cast<lv_obj_t *>(obj), v, 0); }
+
+void setWalkX(void *, int32_t v) {
+  walkX = v;
+  lv_obj_set_style_translate_x(botImg, v, 0);
+  lv_obj_set_style_translate_x(shadow, v, 0);
+  lv_obj_set_style_translate_x(zzzLbl, v, 0);
+}
+
+// Each firing starts one stroll and re-arms itself for after the next rest.
+void walkCb(lv_timer_t *t) {
+  const WanderStep s = nextWander(walkRng, walkX);
+  lv_anim_t a;
+  lv_anim_init(&a);
+  lv_anim_set_var(&a, botImg);
+  lv_anim_set_exec_cb(&a, setWalkX);
+  lv_anim_set_values(&a, walkX, s.target);
+  lv_anim_set_time(&a, s.moveMs);
+  lv_anim_set_path_cb(&a, lv_anim_path_ease_in_out);
+  lv_anim_start(&a);
+  lv_timer_set_period(t, s.moveMs + s.pauseMs);
+}
+
+void updateWalking() {
+  const bool canWalk = !asleep && !shownShutdown && !screenOff;
+  if (canWalk) {
+    lv_timer_resume(walkTimer);
+  } else {
+    lv_timer_pause(walkTimer);
+    lv_anim_del(botImg, setWalkX);  // stop where it is
+  }
+}
 
 void startBob() {
   lv_anim_t a;
@@ -142,14 +180,14 @@ void homeBuild(lv_obj_t *tile) {
   lv_img_set_src(moonImg, &sg_img_moon_0);
   lv_obj_align(moonImg, LV_ALIGN_TOP_MID, 120, 64);
 
-  // platform under the bot
-  lv_obj_t *plat = lv_obj_create(tile);
-  lv_obj_remove_style_all(plat);
-  lv_obj_set_size(plat, 150, 8);
-  lv_obj_set_style_radius(plat, 4, 0);
-  lv_obj_set_style_bg_opa(plat, LV_OPA_COVER, 0);
-  lv_obj_set_style_bg_color(plat, lv_color_hex(theme::kTrack), 0);
-  lv_obj_align(plat, LV_ALIGN_CENTER, 0, 52);
+  // shadow under the bot (walks with it)
+  shadow = lv_obj_create(tile);
+  lv_obj_remove_style_all(shadow);
+  lv_obj_set_size(shadow, 96, 8);
+  lv_obj_set_style_radius(shadow, LV_RADIUS_CIRCLE, 0);
+  lv_obj_set_style_bg_opa(shadow, LV_OPA_50, 0);
+  lv_obj_set_style_bg_color(shadow, lv_color_black(), 0);
+  lv_obj_align(shadow, LV_ALIGN_CENTER, 0, 52);
 
   botImg = lv_img_create(tile);
   lv_img_set_src(botImg, botFrame(Stage::Core, 0, 0));
@@ -179,6 +217,8 @@ void homeBuild(lv_obj_t *tile) {
 
   startBob();
   animTimer = lv_timer_create(animCb, 100, nullptr);
+  walkRng ^= lv_tick_get() * 2654435761u;
+  walkTimer = lv_timer_create(walkCb, 2500, nullptr);
 }
 
 void homeRefresh(const Pet &p, uint32_t now, int battery, bool charging) {
@@ -208,6 +248,7 @@ void homeRefresh(const Pet &p, uint32_t now, int battery, bool charging) {
     else startBob();
   }
   setVisible(zzzLbl, asleep);
+  updateWalking();
   shownStage = p.stage;
   shownLine = p.line;
   shownShutdown = p.shutdown;
@@ -227,6 +268,7 @@ void homeRefresh(const Pet &p, uint32_t now, int battery, bool charging) {
 
 void homeSetSleeping(bool sleeping) {
   screenOff = sleeping;
+  updateWalking();
   if (sleeping) {
     lv_timer_pause(animTimer);
     stopBob();

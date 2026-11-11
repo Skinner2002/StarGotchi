@@ -63,6 +63,8 @@ int main() {
   sg::ui::build([](sg::ui::Action, uint32_t) {}, {200, 70});
   sg::ui::refresh(p, day0 + 3 * 86400 + 14 * 3600, 84, false);
   shot("home_day");
+  run(7000);
+  shot("home_walk");
 
   p.stage = sg::Stage::Astro; p.line = 2; p.docked = true; p.cond = 12;
   sg::ui::refresh(p, day0 + 8 * 86400 + 23 * 3600, 52, true);

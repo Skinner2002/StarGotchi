@@ -22,6 +22,7 @@ lv_obj_t *rebootBtn;
 lv_timer_t *animTimer;
 
 Stage shownStage = Stage::Core;
+uint8_t shownLine = 0;
 bool shownShutdown = false;
 bool asleep = false;
 bool screenOff = false;
@@ -105,7 +106,7 @@ void animCb(lv_timer_t *) {
   else if (shownStage == Stage::Core) frame = (animTick / 4) % 2;
   else if (asleep) frame = 1;  // eyes closed
   else frame = (animTick % 40) == 0 || (animTick % 40) == 1;
-  const lv_img_dsc_t *src = shownShutdown ? shutdownFrame(frame) : botFrame(shownStage, frame);
+  const lv_img_dsc_t *src = shownShutdown ? shutdownFrame(frame) : botFrame(shownStage, shownLine, frame);
   if (lv_img_get_src(botImg) != src) lv_img_set_src(botImg, src);
   if (asleep && !shownShutdown) {
     static const char *z[] = {"z", "zZ", "zZz", "zZz"};
@@ -131,7 +132,7 @@ void homeBuild(lv_obj_t *tile) {
 
   batteryLbl = theme::label(tile, "", theme::small(), theme::kMuted);
   lv_obj_align(batteryLbl, LV_ALIGN_TOP_MID, 0, 22);
-  nameLbl = theme::label(tile, "UNIT-7  Lv.1", theme::big(), theme::kHolo);
+  nameLbl = theme::label(tile, "CORE  Lv.1", theme::big(), theme::kHolo);
   lv_obj_align(nameLbl, LV_ALIGN_TOP_MID, 0, 50);
   statusLbl = theme::label(tile, "", theme::small(), theme::kMuted);
   lv_obj_align(statusLbl, LV_ALIGN_TOP_MID, 0, 76);
@@ -149,7 +150,7 @@ void homeBuild(lv_obj_t *tile) {
   lv_obj_align(plat, LV_ALIGN_CENTER, 0, 52);
 
   botImg = lv_img_create(tile);
-  lv_img_set_src(botImg, botFrame(Stage::Core, 0));
+  lv_img_set_src(botImg, botFrame(Stage::Core, 0, 0));
   lv_obj_align(botImg, LV_ALIGN_CENTER, 0, -14);
   zzzLbl = theme::label(tile, "", theme::big(), theme::kHolo);
   lv_obj_align(zzzLbl, LV_ALIGN_CENTER, 80, -80);
@@ -186,7 +187,10 @@ void homeRefresh(const Pet &p, uint32_t now, int battery, bool charging) {
   }
 
   char buf[32];
-  snprintf(buf, sizeof buf, "UNIT-7  Lv.%u", level(p));
+  // The unit type stays a surprise until the core hatches.
+  static const char *const kTitles[] = {"CRAWLER", "WHEELER", "HOVER"};
+  snprintf(buf, sizeof buf, "%s  Lv.%u", p.stage == Stage::Core ? "CORE" : kTitles[p.line % 3],
+           level(p));
   setText(nameLbl, buf);
   setText(statusLbl, statusText(p, now));
   if (battery < 0) snprintf(buf, sizeof buf, "%s", charging ? "USB" : "");
@@ -202,6 +206,7 @@ void homeRefresh(const Pet &p, uint32_t now, int battery, bool charging) {
   }
   setVisible(zzzLbl, asleep);
   shownStage = p.stage;
+  shownLine = p.line;
   shownShutdown = p.shutdown;
 
   // Rust tint when the bot needs repair.

@@ -6,10 +6,11 @@ namespace sg {
 
 namespace {
 
-constexpr uint8_t kVersion = 1;
+constexpr uint8_t kVersion = 2;  // v2 adds the unit line; v1 still loads
 // magic(3) + version(1) + 4 floats + stage(1) + bornAt + lastUpdate + xp +
 // docked(1) + shutdown(1) + zeroSince + careSum + 3 counters + crc
-constexpr size_t kSize = 4 + 16 + 1 + 4 + 4 + 4 + 1 + 1 + 4 + 4 + 12 + 4;
+constexpr size_t kSizeV1 = 4 + 16 + 1 + 4 + 4 + 4 + 1 + 1 + 4 + 4 + 12 + 4;
+constexpr size_t kSize = kSizeV1 + 1;
 
 struct Writer {
   uint8_t *p;
@@ -46,15 +47,18 @@ size_t encodePet(const Pet &p, uint8_t *buf, size_t cap) {
   w.u8(p.docked); w.u8(p.shutdown);
   w.u32(p.zeroSince); w.f32(p.careSum);
   w.u32(p.careSamples); w.u32(p.playCount); w.u32(p.actionCount);
+  w.u8(p.line);
   w.u32(crc32(buf, kSize - 4));
   return kSize;
 }
 
 bool decodePet(const uint8_t *buf, size_t len, Pet &out) {
-  if (len != kSize || buf[0] != 'S' || buf[1] != 'G' || buf[2] != 'P' || buf[3] != kVersion)
-    return false;
-  Reader c{buf + kSize - 4};
-  if (c.u32() != crc32(buf, kSize - 4)) return false;
+  if (len < 4 || buf[0] != 'S' || buf[1] != 'G' || buf[2] != 'P') return false;
+  const uint8_t version = buf[3];
+  const size_t size = version == 1 ? kSizeV1 : (version == 2 ? kSize : 0);
+  if (size == 0 || len != size) return false;
+  Reader c{buf + size - 4};
+  if (c.u32() != crc32(buf, size - 4)) return false;
   Reader r{buf + 4};
   Pet p{};
   p.oil = r.f32(); p.mood = r.f32(); p.power = r.f32(); p.cond = r.f32();
@@ -65,6 +69,8 @@ bool decodePet(const uint8_t *buf, size_t len, Pet &out) {
   p.docked = r.u8() != 0; p.shutdown = r.u8() != 0;
   p.zeroSince = r.u32(); p.careSum = r.f32();
   p.careSamples = r.u32(); p.playCount = r.u32(); p.actionCount = r.u32();
+  p.line = version >= 2 ? r.u8() : 0;
+  if (p.line >= kLineCount) return false;
   out = p;
   return true;
 }

@@ -228,4 +228,18 @@ TEST(clock_set_backwards_no_instant_shutdown) {
   CHECK(p.shutdown);
 }
 
+TEST(new_pet_keeps_unit_line) {
+  CHECK(newPet(at(0, 12), 2).line == 2);
+  CHECK(newPet(at(0, 12), 0).line == 0);
+  CHECK(newPet(at(0, 12), 7).line == 1);  // wrapped into 0..2
+  CHECK(newPet(at(0, 12)).line == 0);
+}
+
+TEST(reboot_keeps_unit_line) {
+  Pet p = newPet(at(0, 12), 2);
+  p.shutdown = true;
+  rebootPet(p, at(0, 13));
+  CHECK(p.line == 2);
+}
+
 RUN_TESTS()

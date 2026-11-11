@@ -17,9 +17,12 @@ struct Pet {
   uint32_t zeroSince;  // 0 = fewer than two stats at 0
   float careSum;
   uint32_t careSamples, playCount, actionCount;
+  uint8_t line;  // unit type: 0 Crawler, 1 Wheeler, 2 Hover (picked at random)
 };
 
-Pet newPet(uint32_t now);
+constexpr uint8_t kLineCount = 3;
+
+Pet newPet(uint32_t now, uint8_t line = 0);  // line is wrapped into 0..2
 bool isNight(uint32_t localEpoch);           // 22:00 .. 06:59
 bool isAsleep(const Pet &p, uint32_t now);   // night or docked
 void advance(Pet &p, uint32_t now);          // catch up in 60 s steps (max 30 days)

@@ -6,27 +6,47 @@
 extern "C" {
 #endif
 
-extern const lv_img_dsc_t sg_img_astro_0;
-extern const lv_img_dsc_t sg_img_astro_1;
-extern const lv_img_dsc_t sg_img_combat_0;
-extern const lv_img_dsc_t sg_img_combat_1;
 extern const lv_img_dsc_t sg_img_core_0;
 extern const lv_img_dsc_t sg_img_core_1;
+extern const lv_img_dsc_t sg_img_crawler_combat_0;
+extern const lv_img_dsc_t sg_img_crawler_combat_1;
+extern const lv_img_dsc_t sg_img_crawler_junior_0;
+extern const lv_img_dsc_t sg_img_crawler_junior_1;
+extern const lv_img_dsc_t sg_img_crawler_mini_0;
+extern const lv_img_dsc_t sg_img_crawler_mini_1;
+extern const lv_img_dsc_t sg_img_crawler_nova_0;
+extern const lv_img_dsc_t sg_img_crawler_nova_1;
+extern const lv_img_dsc_t sg_img_crawler_scrap_0;
+extern const lv_img_dsc_t sg_img_crawler_scrap_1;
+extern const lv_img_dsc_t sg_img_hover_combat_0;
+extern const lv_img_dsc_t sg_img_hover_combat_1;
+extern const lv_img_dsc_t sg_img_hover_junior_0;
+extern const lv_img_dsc_t sg_img_hover_junior_1;
+extern const lv_img_dsc_t sg_img_hover_mini_0;
+extern const lv_img_dsc_t sg_img_hover_mini_1;
+extern const lv_img_dsc_t sg_img_hover_nova_0;
+extern const lv_img_dsc_t sg_img_hover_nova_1;
+extern const lv_img_dsc_t sg_img_hover_scrap_0;
+extern const lv_img_dsc_t sg_img_hover_scrap_1;
 extern const lv_img_dsc_t sg_img_icon_dock_0;
 extern const lv_img_dsc_t sg_img_icon_fix_0;
 extern const lv_img_dsc_t sg_img_icon_oil_0;
 extern const lv_img_dsc_t sg_img_icon_play_0;
-extern const lv_img_dsc_t sg_img_junior_0;
-extern const lv_img_dsc_t sg_img_junior_1;
-extern const lv_img_dsc_t sg_img_mini_0;
-extern const lv_img_dsc_t sg_img_mini_1;
 extern const lv_img_dsc_t sg_img_moon_0;
 extern const lv_img_dsc_t sg_img_rock_0;
-extern const lv_img_dsc_t sg_img_scrap_0;
-extern const lv_img_dsc_t sg_img_scrap_1;
 extern const lv_img_dsc_t sg_img_ship_0;
 extern const lv_img_dsc_t sg_img_shutdown_0;
 extern const lv_img_dsc_t sg_img_shutdown_1;
+extern const lv_img_dsc_t sg_img_wheeler_combat_0;
+extern const lv_img_dsc_t sg_img_wheeler_combat_1;
+extern const lv_img_dsc_t sg_img_wheeler_junior_0;
+extern const lv_img_dsc_t sg_img_wheeler_junior_1;
+extern const lv_img_dsc_t sg_img_wheeler_mini_0;
+extern const lv_img_dsc_t sg_img_wheeler_mini_1;
+extern const lv_img_dsc_t sg_img_wheeler_nova_0;
+extern const lv_img_dsc_t sg_img_wheeler_nova_1;
+extern const lv_img_dsc_t sg_img_wheeler_scrap_0;
+extern const lv_img_dsc_t sg_img_wheeler_scrap_1;
 
 #ifdef __cplusplus
 }

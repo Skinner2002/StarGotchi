@@ -12,6 +12,7 @@ static Pet sample() {
   p.xp = 1234; p.docked = true; p.shutdown = false;
   p.zeroSince = 1767590000u;
   p.careSum = 4567.75f; p.careSamples = 89; p.playCount = 7; p.actionCount = 21;
+  p.line = 2;
   return p;
 }
 
@@ -21,7 +22,7 @@ static bool same(const Pet &a, const Pet &b) {
          a.xp == b.xp && a.docked == b.docked && a.shutdown == b.shutdown &&
          a.zeroSince == b.zeroSince && a.careSum == b.careSum &&
          a.careSamples == b.careSamples && a.playCount == b.playCount &&
-         a.actionCount == b.actionCount;
+         a.actionCount == b.actionCount && a.line == b.line;
 }
 
 TEST(roundtrip) {
@@ -50,7 +51,7 @@ TEST(crc_detects_flip) {
 TEST(wrong_version_rejected) {
   uint8_t buf[128];
   const size_t n = encodePet(sample(), buf, sizeof buf);
-  buf[3] = 2;
+  buf[3] = 9;
   Pet q = newPet(0);
   CHECK(!decodePet(buf, n, q));
 }
@@ -66,6 +67,33 @@ TEST(truncated_rejected) {
 TEST(small_buffer_returns_0) {
   uint8_t buf[16];
   CHECK(encodePet(sample(), buf, sizeof buf) == 0);
+}
+
+TEST(version1_save_still_loads_as_line_0) {
+  uint8_t buf[128];
+  const size_t n = encodePet(sample(), buf, sizeof buf);
+  // v1 layout = v2 without the trailing line byte (just before the CRC).
+  uint8_t v1[128];
+  const size_t m = n - 1;
+  for (size_t i = 0; i < m - 4; i++) v1[i] = buf[i];
+  v1[3] = 1;
+  const uint32_t crc = crc32(v1, m - 4);
+  for (int i = 0; i < 4; i++) v1[m - 4 + i] = (crc >> (8 * i)) & 0xFF;
+  Pet q = newPet(0);
+  CHECK(decodePet(v1, m, q));
+  CHECK(q.line == 0);
+  CHECK(q.xp == 1234);
+  CHECK(q.stage == Stage::Junior);
+}
+
+TEST(bad_line_rejected) {
+  uint8_t buf[128];
+  const size_t n = encodePet(sample(), buf, sizeof buf);
+  buf[n - 5] = 3;
+  const uint32_t crc = crc32(buf, n - 4);
+  for (int i = 0; i < 4; i++) buf[n - 4 + i] = (crc >> (8 * i)) & 0xFF;
+  Pet q = newPet(0);
+  CHECK(!decodePet(buf, n, q));
 }
 
 RUN_TESTS()

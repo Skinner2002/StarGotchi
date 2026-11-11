@@ -5,12 +5,14 @@
 **StarGotchi – a pocket bot that needs your care**
 
 Turn the Waveshare ESP32-S3 1.75" round AMOLED board into a little space-adventure
-virtual pet. Your bot starts as a glowing energy core and grows into a Mini-Bot, a
-Junior-Bot and finally one of three forms – depending on how you look after it:
+virtual pet. Your bot starts as a glowing energy core – and you never know what hatches:
+a four-legged **Crawler**, a one-wheeled **Wheeler** or a floating **Hover** unit.
+Each grows from Mini to Junior and finally into one of three forms, depending on how
+you look after it:
 
-- **Nova-Bot** – balanced, good care
-- **Combat-Bot** – lots of play and training
-- **Scrap-Bot** – neglected, crooked, but still lovable
+- **Nova** – balanced, good care
+- **Combat** – lots of play and training
+- **Scrap** – neglected, crooked, but still lovable
 
 Keep four systems running: **Oil**, **Mood**, **Power** and **Condition**. Refill oil,
 play the tilt-controlled mini-game *Asteroid Run*, put your bot on the charging dock
@@ -43,9 +45,10 @@ Source code and issues: https://github.com/Skinner2002/stargotchi
 **StarGotchi – ein Taschen-Bot, der deine Pflege braucht**
 
 Verwandelt das runde Waveshare ESP32-S3 1,75"-AMOLED-Board in ein kleines virtuelles
-Haustier im Weltraum-Abenteuer-Stil. Dein Bot startet als leuchtender Energiekern und
-entwickelt sich zum Mini-Bot, Junior-Bot und schließlich – je nach Pflege – zum
-**Nova-Bot**, **Kampf-Bot** oder **Schrott-Bot**.
+Haustier im Weltraum-Abenteuer-Stil. Dein Bot startet als leuchtender Energiekern – und
+erst beim Schlüpfen zeigt sich, ob es ein vierbeiniger **Crawler**, ein Einrad-**Wheeler**
+oder ein schwebender **Hover** wird. Jede Unit entwickelt sich vom Mini über Junior zu
+einer von drei Endformen: **Nova**, **Kampf** oder **Schrott** – je nach Pflege.
 
 Halte vier Systeme am Laufen: **Öl**, **Laune**, **Ladung** und **Zustand**. Öl
 nachfüllen, das Neige-Minispiel *Asteroid Run* spielen, auf der Ladestation aufladen

@@ -65,8 +65,9 @@ void giveXp(Pet &p) {
 
 }  // namespace
 
-Pet newPet(uint32_t now) {
+Pet newPet(uint32_t now, uint8_t line) {
   Pet p{};
+  p.line = line % kLineCount;
   p.oil = p.mood = p.power = p.cond = 80.f;
   p.stage = Stage::Core;
   p.bornAt = p.lastUpdate = now;

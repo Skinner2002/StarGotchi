@@ -61,6 +61,12 @@ Board übernommen.
 - Beim allerersten Start wird die Uhrzeit eingestellt (Setup-Seite).
 
 ### 3.3 Entwicklung
+
+**Update 2026-11-11:** Beim Start wird zufällig eine von drei eigenen Units gewählt –
+**Crawler** (vierbeinig), **Wheeler** (Einrad) oder **Hover** (schwebend). Jede hat eigene
+Grafiken für Mini, Junior und die drei Endformen; die Regeln unten gelten für alle drei.
+Der Speicherstand (Version 2) merkt sich die Unit, alte Stände laden als Crawler.
+
 1. **Kern** – leuchtender Energiekern, „bootet" (Start)
 2. **Mini-Bot** – nach ca. 1 Tag
 3. **Junior-Bot** – nach ca. 3 Tagen

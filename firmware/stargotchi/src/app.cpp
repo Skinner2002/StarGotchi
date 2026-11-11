@@ -156,7 +156,7 @@ void onAction(ui::Action a, uint32_t arg) {
       if (arg) hal::beep(660, 60);
       return;
     case ui::Action::Reset:
-      pet = newPet(hal::rtcNow());
+      pet = newPet(hal::rtcNow(), static_cast<uint8_t>(esp_random() % kLineCount));
       lowAlerts = LowAlerts{};
       ui::goHome();
       break;
@@ -191,7 +191,7 @@ void appSetup() {
   uint8_t buf[kSaveMaxSize];
   size_t len = 0;
   const bool loaded = hal::nvsLoad(buf, sizeof buf, len) && decodePet(buf, len, pet);
-  if (!loaded) pet = newPet(now);
+  if (!loaded) pet = newPet(now, static_cast<uint8_t>(esp_random() % kLineCount));
   if (clockValid) {
     advance(pet, now);
     lastClock = now;

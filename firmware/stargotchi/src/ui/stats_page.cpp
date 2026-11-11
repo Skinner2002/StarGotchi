@@ -41,7 +41,7 @@ void statsRefresh(const Pet &p, uint32_t now, int battery) {
   const uint32_t age = now > p.bornAt ? (now - p.bornAt) / 86400u : 0;
   snprintf(buf, sizeof buf, "Age %lu day%s", static_cast<unsigned long>(age), age == 1 ? "" : "s");
   setText(rows[2], buf);
-  setText(rows[3], p.shutdown ? "Offline" : stageName(p.stage));
+  setText(rows[3], p.shutdown ? "Offline" : stageName(p.stage, p.line));
   const int care = p.careSamples ? static_cast<int>(p.careSum / p.careSamples + 0.5f) : 0;
   snprintf(buf, sizeof buf, "Care %d%%", care);
   setText(rows[4], buf);

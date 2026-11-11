@@ -5,9 +5,11 @@
 
 namespace sg {
 
-// Idle (0) and alternate/blink (1) frame for a stage.
-const lv_img_dsc_t *botFrame(Stage stage, uint8_t frame);
+// Idle (0) and blink (1) frame for a unit line and stage.
+const lv_img_dsc_t *botFrame(Stage stage, uint8_t line, uint8_t frame);
 const lv_img_dsc_t *shutdownFrame(uint8_t frame);
-const char *stageName(Stage stage);
+// e.g. "Nova Crawler", "Mini Hover", "Energy Core"
+const char *stageName(Stage stage, uint8_t line);
+const char *lineName(uint8_t line);
 
 }  // namespace sg

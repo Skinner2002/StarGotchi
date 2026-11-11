@@ -58,12 +58,13 @@ int main() {
   const uint32_t day0 = 1767571200u;  // 2026-01-05 00:00
   sg::Pet p = sg::newPet(day0 + 10 * 3600);
   p.stage = sg::Stage::Junior;
+  p.line = 1;
   p.oil = 70; p.mood = 45; p.power = 85; p.cond = 30; p.xp = 340;
   sg::ui::build([](sg::ui::Action, uint32_t) {}, {200, true});
   sg::ui::refresh(p, day0 + 3 * 86400 + 14 * 3600, 84, false);
   shot("home_day");
 
-  p.stage = sg::Stage::Astro; p.docked = true; p.cond = 12;
+  p.stage = sg::Stage::Astro; p.line = 2; p.docked = true; p.cond = 12;
   sg::ui::refresh(p, day0 + 8 * 86400 + 23 * 3600, 52, true);
   shot("home_night");
 
@@ -72,7 +73,7 @@ int main() {
   shot("home_shutdown");
 
   p = sg::newPet(day0);
-  p.stage = sg::Stage::Combat; p.xp = 1234; p.careSum = 7000; p.careSamples = 100;
+  p.stage = sg::Stage::Combat; p.line = 0; p.xp = 1234; p.careSum = 7000; p.careSamples = 100;
   sg::ui::refresh(p, day0 + 9 * 86400 + 12 * 3600, 77, false);
   sg::ui::debugShowPage(0);
   shot("stats");

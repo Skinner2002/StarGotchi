@@ -11,12 +11,12 @@ enum class Action : uint8_t {
   Oil, Play, Dock, Fix, Reboot,
   SetTime,     // arg = minutes since midnight
   Brightness,  // arg = 20..255
-  Sound,       // arg = 0/1
+  Volume,      // arg = 0..100 (0 = muted)
   Reset,
 };
 using ActionHandler = void (*)(Action, uint32_t arg);
 
-struct Settings { uint8_t brightness; bool sound; };
+struct Settings { uint8_t brightness; uint8_t volume; };
 
 void build(ActionHandler handler, const Settings &settings);
 void refresh(const Pet &pet, uint32_t now, int battery, bool charging);

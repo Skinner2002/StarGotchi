@@ -60,7 +60,7 @@ int main() {
   p.stage = sg::Stage::Junior;
   p.line = 1;
   p.oil = 70; p.mood = 45; p.power = 85; p.cond = 30; p.xp = 340;
-  sg::ui::build([](sg::ui::Action, uint32_t) {}, {200, true});
+  sg::ui::build([](sg::ui::Action, uint32_t) {}, {200, 70});
   sg::ui::refresh(p, day0 + 3 * 86400 + 14 * 3600, 84, false);
   shot("home_day");
 

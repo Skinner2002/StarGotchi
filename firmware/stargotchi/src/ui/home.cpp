@@ -4,6 +4,7 @@
 
 #include "../assets/bot_frames.h"
 #include "../assets/sprites.h"
+#include "background.h"
 #include "pages.h"
 #include "theme.h"
 
@@ -121,6 +122,7 @@ void flashFade(void *obj, int32_t v) {
 }  // namespace
 
 void homeBuild(lv_obj_t *tile) {
+  bgBuild(tile);
   arcs[0] = makeArc(tile, 182, 225, false, theme::kOil);   // OIL, upper left
   arcs[1] = makeArc(tile, 135, 178, true, theme::kMood);   // MOOD, lower left
   arcs[2] = makeArc(tile, 315, 358, true, theme::kPower);  // PWR, upper right
@@ -197,6 +199,7 @@ void homeRefresh(const Pet &p, uint32_t now, int battery, bool charging) {
   else snprintf(buf, sizeof buf, "%d%%%s", battery, charging ? "+" : "");
   setText(batteryLbl, buf);
   setVisible(moonImg, isNight(now));
+  bgSetNight(isNight(now));
 
   const bool nowAsleep = isAsleep(p, now) && !p.shutdown;
   if (nowAsleep != asleep || p.shutdown != shownShutdown) {

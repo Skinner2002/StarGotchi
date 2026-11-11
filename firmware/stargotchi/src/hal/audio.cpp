@@ -21,17 +21,20 @@ struct Tone { uint16_t hz, ms; };
 I2SClass i2s;
 QueueHandle_t queue = nullptr;
 volatile bool soundOn = true;
+es8311_handle_t codec = nullptr;
+uint8_t volumePct = 70;
 
 bool codecInit() {
   es8311_handle_t h = es8311_create(0, ES8311_ADDRRES_0);
   if (!h) return false;
+  codec = h;
   const es8311_clock_config_t clk = {
       .mclk_inverted = false, .sclk_inverted = false, .mclk_from_mclk_pin = true,
       .mclk_frequency = kRate * 256, .sample_frequency = kRate};
   if (es8311_init(h, &clk, ES8311_RESOLUTION_16, ES8311_RESOLUTION_16) != ESP_OK) return false;
   es8311_sample_frequency_config(h, clk.mclk_frequency, clk.sample_frequency);
   es8311_microphone_config(h, false);
-  es8311_voice_volume_set(h, 75, nullptr);
+  es8311_voice_volume_set(h, volumePct, nullptr);
   return true;
 }
 
@@ -90,7 +93,13 @@ void beep(uint16_t hz, uint16_t ms) {
   xQueueSend(queue, &t, 0);
 }
 
-void setSoundEnabled(bool on) { soundOn = on; }
+void setVolume(uint8_t percent) {
+  if (percent > 100) percent = 100;
+  soundOn = percent > 0;
+  volumePct = percent;
+  // Codec volume is roughly logarithmic; keep low settings audible.
+  if (codec && percent > 0) es8311_voice_volume_set(codec, 40 + percent * 55 / 100, nullptr);
+}
 
 }  // namespace hal
 }  // namespace sg

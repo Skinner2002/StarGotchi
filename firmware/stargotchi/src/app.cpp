@@ -150,10 +150,10 @@ void onAction(ui::Action a, uint32_t arg) {
       hal::nvsSetU8("bright", brightness);
       hal::displaySetBrightness(brightness);
       return;
-    case ui::Action::Sound:
-      hal::setSoundEnabled(arg != 0);
-      hal::nvsSetU8("sound", arg ? 1 : 0);
-      if (arg) hal::beep(660, 60);
+    case ui::Action::Volume:
+      hal::setVolume(static_cast<uint8_t>(arg));
+      hal::nvsSetU8("vol", static_cast<uint8_t>(arg));
+      hal::beep(660, 80);  // preview at the new volume (silent when 0)
       return;
     case ui::Action::Reset:
       pet = newPet(hal::rtcNow(), static_cast<uint8_t>(esp_random() % kLineCount));
@@ -182,8 +182,9 @@ void appSetup() {
 
   brightness = hal::nvsGetU8("bright", 200);
   if (brightness < 20) brightness = 20;
-  const bool sound = hal::nvsGetU8("sound", 1) != 0;
-  hal::setSoundEnabled(sound);
+  uint8_t volume = hal::nvsGetU8("vol", 255);
+  if (volume > 100) volume = hal::nvsGetU8("sound", 1) ? 70 : 0;  // first start / old setting
+  hal::setVolume(volume);
   hal::displaySetBrightness(brightness);
 
   clockValid = hal::rtcValid();
@@ -198,7 +199,7 @@ void appSetup() {
   }
   newLowStats(lowAlerts, pet);  // no alert beeps for stats that were already low
 
-  ui::build(onAction, ui::Settings{brightness, sound});
+  ui::build(onAction, ui::Settings{brightness, volume});
   hal::touchSetGate(touchGate);
   battery = hal::batteryPercent();
   charging = hal::isCharging();

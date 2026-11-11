@@ -34,7 +34,7 @@ shutdown.
 
 **Controls**
 - Home: tap the icons (oil can, gamepad, dock, wrench)
-- Swipe right: stats · swipe left: setup (clock, brightness, sound, reset)
+- Swipe right: stats · swipe left: setup (clock, brightness, volume, reset)
 - Mini-game: tilt the device to dodge asteroids
 - Night (22:00–07:00): your bot sleeps on its own
 

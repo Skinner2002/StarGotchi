@@ -31,7 +31,7 @@ bool isCharging();
 // Speaker (ES8311). Non-blocking: tones are queued and played by a task.
 bool audioBegin();
 void beep(uint16_t hz, uint16_t ms);
-void setSoundEnabled(bool on);
+void setVolume(uint8_t percent);  // 0 = muted, 1..100
 
 }  // namespace hal
 }  // namespace sg

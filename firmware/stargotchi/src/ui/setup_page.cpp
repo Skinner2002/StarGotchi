@@ -51,8 +51,24 @@ void brightCb(lv_event_t *e) {
   emit(Action::Brightness, lv_slider_get_value(lv_event_get_target(e)));
 }
 
-void soundCb(lv_event_t *e) {
-  emit(Action::Sound, lv_obj_has_state(lv_event_get_target(e), LV_STATE_CHECKED) ? 1 : 0);
+void volumeCb(lv_event_t *e) {
+  emit(Action::Volume, lv_slider_get_value(lv_event_get_target(e)));
+}
+
+lv_obj_t *settingSlider(lv_obj_t *tile, const char *name, int y, int min, int max, int value,
+                        uint32_t color, lv_event_cb_t cb) {
+  lv_obj_t *l = theme::label(tile, name, theme::small(), theme::kMuted);
+  lv_obj_align(l, LV_ALIGN_TOP_MID, -100, y + 2);
+  lv_obj_t *slider = lv_slider_create(tile);
+  lv_obj_set_width(slider, 150);
+  lv_slider_set_range(slider, min, max);
+  lv_slider_set_value(slider, value, LV_ANIM_OFF);
+  lv_obj_set_style_bg_color(slider, lv_color_hex(color), LV_PART_INDICATOR);
+  lv_obj_set_style_bg_color(slider, lv_color_hex(color), LV_PART_KNOB);
+  lv_obj_align(slider, LV_ALIGN_TOP_MID, 30, y);
+  lv_obj_add_event_cb(slider, cb, LV_EVENT_RELEASED, nullptr);
+  lv_obj_clear_flag(slider, LV_OBJ_FLAG_SCROLL_CHAIN_HOR);  // dragging must not flip pages
+  return slider;
 }
 
 void msgboxCb(lv_event_t *e) {
@@ -103,25 +119,8 @@ void setupBuild(lv_obj_t *tile, const Settings &s) {
   lv_obj_t *setBtn = textButton(tile, "SET TIME", theme::kCond, 160, 222);
   lv_obj_add_event_cb(setBtn, setTimeCb, LV_EVENT_CLICKED, nullptr);
 
-  lv_obj_t *bl = theme::label(tile, "BRIGHT", theme::small(), theme::kMuted);
-  lv_obj_align(bl, LV_ALIGN_TOP_MID, -96, 288);
-  lv_obj_t *slider = lv_slider_create(tile);
-  lv_obj_set_width(slider, 150);
-  lv_slider_set_range(slider, 20, 255);
-  lv_slider_set_value(slider, s.brightness, LV_ANIM_OFF);
-  lv_obj_set_style_bg_color(slider, lv_color_hex(theme::kHolo), LV_PART_INDICATOR);
-  lv_obj_set_style_bg_color(slider, lv_color_hex(theme::kHolo), LV_PART_KNOB);
-  lv_obj_align(slider, LV_ALIGN_TOP_MID, 30, 290);
-  lv_obj_add_event_cb(slider, brightCb, LV_EVENT_RELEASED, nullptr);
-  lv_obj_clear_flag(slider, LV_OBJ_FLAG_SCROLL_CHAIN_HOR);  // dragging must not flip pages
-
-  lv_obj_t *sl = theme::label(tile, "SOUND", theme::small(), theme::kMuted);
-  lv_obj_align(sl, LV_ALIGN_TOP_MID, -40, 334);
-  lv_obj_t *sw = lv_switch_create(tile);
-  lv_obj_align(sw, LV_ALIGN_TOP_MID, 40, 326);
-  lv_obj_set_style_bg_color(sw, lv_color_hex(theme::kPower), LV_PART_INDICATOR | LV_STATE_CHECKED);
-  if (s.sound) lv_obj_add_state(sw, LV_STATE_CHECKED);
-  lv_obj_add_event_cb(sw, soundCb, LV_EVENT_VALUE_CHANGED, nullptr);
+  settingSlider(tile, "BRIGHT", 288, 20, 255, s.brightness, theme::kHolo, brightCb);
+  settingSlider(tile, "VOLUME", 330, 0, 100, s.volume, theme::kPower, volumeCb);
 
   lv_obj_t *resetBtn = textButton(tile, "RESET BOT", theme::kWarn, 140, 370);
   lv_obj_add_event_cb(resetBtn, resetCb, LV_EVENT_CLICKED, nullptr);

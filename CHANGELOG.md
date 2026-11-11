@@ -7,7 +7,7 @@
 - Tilt-controlled mini-game "Asteroid Run"
 - Stats and setup pages (clock, brightness, volume, reset)
 - Planet scenery behind the bot (day and night)
-- The bot strolls left and right on its own while awake
+- The bot strolls left and right on its own while awake, shown from the side while walking
 - Screen dims after 30 s and turns off after 60 s
 - Save survives power loss and web-installer updates
 - Browser installer on GitHub Pages

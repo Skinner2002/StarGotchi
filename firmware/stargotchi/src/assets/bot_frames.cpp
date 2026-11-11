@@ -25,6 +25,42 @@ const lv_img_dsc_t *const kFrames[kLineCount][5][2] = {
      {&sg_img_hover_scrap_0, &sg_img_hover_scrap_1}},
 };
 
+// Walking side views: [line][stage - Mini][frame]
+const lv_img_dsc_t *const kRight[kLineCount][5][2] = {
+    {{&sg_img_crawler_mini_right_0, &sg_img_crawler_mini_right_1},
+     {&sg_img_crawler_junior_right_0, &sg_img_crawler_junior_right_1},
+     {&sg_img_crawler_nova_right_0, &sg_img_crawler_nova_right_1},
+     {&sg_img_crawler_combat_right_0, &sg_img_crawler_combat_right_1},
+     {&sg_img_crawler_scrap_right_0, &sg_img_crawler_scrap_right_1}},
+    {{&sg_img_wheeler_mini_right_0, &sg_img_wheeler_mini_right_1},
+     {&sg_img_wheeler_junior_right_0, &sg_img_wheeler_junior_right_1},
+     {&sg_img_wheeler_nova_right_0, &sg_img_wheeler_nova_right_1},
+     {&sg_img_wheeler_combat_right_0, &sg_img_wheeler_combat_right_1},
+     {&sg_img_wheeler_scrap_right_0, &sg_img_wheeler_scrap_right_1}},
+    {{&sg_img_hover_mini_right_0, &sg_img_hover_mini_right_1},
+     {&sg_img_hover_junior_right_0, &sg_img_hover_junior_right_1},
+     {&sg_img_hover_nova_right_0, &sg_img_hover_nova_right_1},
+     {&sg_img_hover_combat_right_0, &sg_img_hover_combat_right_1},
+     {&sg_img_hover_scrap_right_0, &sg_img_hover_scrap_right_1}},
+};
+const lv_img_dsc_t *const kLeft[kLineCount][5][2] = {
+    {{&sg_img_crawler_mini_left_0, &sg_img_crawler_mini_left_1},
+     {&sg_img_crawler_junior_left_0, &sg_img_crawler_junior_left_1},
+     {&sg_img_crawler_nova_left_0, &sg_img_crawler_nova_left_1},
+     {&sg_img_crawler_combat_left_0, &sg_img_crawler_combat_left_1},
+     {&sg_img_crawler_scrap_left_0, &sg_img_crawler_scrap_left_1}},
+    {{&sg_img_wheeler_mini_left_0, &sg_img_wheeler_mini_left_1},
+     {&sg_img_wheeler_junior_left_0, &sg_img_wheeler_junior_left_1},
+     {&sg_img_wheeler_nova_left_0, &sg_img_wheeler_nova_left_1},
+     {&sg_img_wheeler_combat_left_0, &sg_img_wheeler_combat_left_1},
+     {&sg_img_wheeler_scrap_left_0, &sg_img_wheeler_scrap_left_1}},
+    {{&sg_img_hover_mini_left_0, &sg_img_hover_mini_left_1},
+     {&sg_img_hover_junior_left_0, &sg_img_hover_junior_left_1},
+     {&sg_img_hover_nova_left_0, &sg_img_hover_nova_left_1},
+     {&sg_img_hover_combat_left_0, &sg_img_hover_combat_left_1},
+     {&sg_img_hover_scrap_left_0, &sg_img_hover_scrap_left_1}},
+};
+
 const char *const kLineNames[kLineCount] = {"Crawler", "Wheeler", "Hover"};
 const char *const kNames[kLineCount][5] = {
     {"Mini Crawler", "Junior Crawler", "Nova Crawler", "Combat Crawler", "Scrap Crawler"},
@@ -38,6 +74,12 @@ const lv_img_dsc_t *botFrame(Stage stage, uint8_t line, uint8_t frame) {
   if (stage == Stage::Core) return (frame & 1) ? &sg_img_core_1 : &sg_img_core_0;
   const int s = static_cast<int>(stage) - 1;
   return kFrames[line % kLineCount][s][frame & 1];
+}
+
+const lv_img_dsc_t *botSideFrame(Stage stage, uint8_t line, bool right, uint8_t frame) {
+  if (stage == Stage::Core) return botFrame(stage, line, frame);
+  const int s = static_cast<int>(stage) - 1;
+  return (right ? kRight : kLeft)[line % kLineCount][s][frame & 1];
 }
 
 const lv_img_dsc_t *shutdownFrame(uint8_t frame) {

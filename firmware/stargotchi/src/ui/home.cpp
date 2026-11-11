@@ -33,6 +33,8 @@ bool screenOff = false;
 lv_obj_t *shadow;
 lv_timer_t *walkTimer;
 int walkX = 0;
+bool walking = false;
+bool walkingRight = true;
 uint32_t walkRng = 0x9E3779B9u;
 uint32_t animTick = 0;
 
@@ -98,6 +100,8 @@ void setWalkX(void *, int32_t v) {
 // Each firing starts one stroll and re-arms itself for after the next rest.
 void walkCb(lv_timer_t *t) {
   const WanderStep s = nextWander(walkRng, walkX);
+  walking = true;
+  walkingRight = s.target > walkX;
   lv_anim_t a;
   lv_anim_init(&a);
   lv_anim_set_var(&a, botImg);
@@ -105,6 +109,7 @@ void walkCb(lv_timer_t *t) {
   lv_anim_set_values(&a, walkX, s.target);
   lv_anim_set_time(&a, s.moveMs);
   lv_anim_set_path_cb(&a, lv_anim_path_ease_in_out);
+  lv_anim_set_ready_cb(&a, [](lv_anim_t *) { walking = false; });
   lv_anim_start(&a);
   lv_timer_set_period(t, s.moveMs + s.pauseMs);
 }
@@ -116,6 +121,7 @@ void updateWalking() {
   } else {
     lv_timer_pause(walkTimer);
     lv_anim_del(botImg, setWalkX);  // stop where it is
+    walking = false;
   }
 }
 
@@ -145,7 +151,10 @@ void animCb(lv_timer_t *) {
   else if (shownStage == Stage::Core) frame = (animTick / 4) % 2;
   else if (asleep) frame = 1;  // eyes closed
   else frame = (animTick % 40) == 0 || (animTick % 40) == 1;
-  const lv_img_dsc_t *src = shownShutdown ? shutdownFrame(frame) : botFrame(shownStage, shownLine, frame);
+  const lv_img_dsc_t *src;
+  if (shownShutdown) src = shutdownFrame(frame);
+  else if (walking) src = botSideFrame(shownStage, shownLine, walkingRight, (animTick / 2) % 2);
+  else src = botFrame(shownStage, shownLine, frame);
   if (lv_img_get_src(botImg) != src) lv_img_set_src(botImg, src);
   if (asleep && !shownShutdown) {
     static const char *z[] = {"z", "zZ", "zZz", "zZz"};
